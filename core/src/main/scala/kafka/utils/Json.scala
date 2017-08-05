@@ -16,8 +16,6 @@
  */
 package kafka.utils
 
-import java.nio.charset.StandardCharsets
-
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import kafka.utils.json.JsonValue
@@ -93,4 +91,13 @@ object Json {
    * a jackson-scala dependency).
    */
   def encodeAsBytes(obj: Any): Array[Byte] = mapper.writeValueAsBytes(obj)
+
+  /**
+    * Parse a JSON string into either a generic type T, or a Throwable in the case of exception.
+    */
+  def parseTo[T](input: String, klass: Class[T]): Either[Throwable, T] = {
+    try Right(mapper.readValue(input, klass))
+    catch { case e: Throwable => Left(e)}
+  }
+
 }
