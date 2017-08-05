@@ -59,4 +59,12 @@ object Json {
     }
   }
 
+  /**
+    * Parse a JSON string into either a generic type T, or a Throwable in the case of exception.
+    */
+  def parseTo[T](input: String, klass: Class[T]): Either[Throwable, T] = {
+    try Right(mapper.readValue(input, klass))
+    catch { case e: Throwable => Left(e)}
+  }
+
 }
