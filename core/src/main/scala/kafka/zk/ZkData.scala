@@ -19,6 +19,7 @@ package kafka.zk
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Properties
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import kafka.api.{ApiVersion, KAFKA_0_10_0_IV1, LeaderAndIsr}
 import kafka.cluster.{Broker, EndPoint}
 import kafka.controller.{IsrChangeNotificationHandler, LeaderIsrAndControllerEpoch}
@@ -318,3 +319,20 @@ object AclChangeNotificationSequenceZNode {
   def encode(resourceName : String): Array[Byte] = resourceName.getBytes(UTF_8)
   def decode(bytes: Array[Byte]): String = new String(bytes, UTF_8)
 }
+
+/**
+  * The assignment of brokers for a `TopicPartition`.
+  *
+  * A replica assignment consists of a `topic`, `partition` and a list of `replicas`, which
+  * represent the broker ids that the `TopicPartition` is assigned to.
+  */
+case class ReplicaAssignment(@JsonProperty("topic") topic: String,
+                             @JsonProperty("partition") partitions: Int,
+                             @JsonProperty("replicas") replicas: java.util.List[Int])
+
+/**
+  * An assignment consists of a `version` and a list of `partitions`, which represent the assignment
+  * of topic-partitions to brokers.
+  */
+case class PartitionAssignment(@JsonProperty("version") version: Int,
+                               @JsonProperty("partitions") partitions: java.util.List[ReplicaAssignment])
