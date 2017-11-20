@@ -22,9 +22,14 @@ import org.junit.Assert._
 import org.junit.Test
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node._
+import kafka.utils.JsonTest.TestObject
 import kafka.utils.json.JsonValue
 
 import scala.collection.JavaConverters._
+
+object JsonTest {
+  case class TestObject(@JsonProperty("foo") foo: String, @JsonProperty("bar") bar: Int)
+}
 
 class JsonTest {
 
@@ -86,5 +91,3 @@ class JsonTest {
   }
 
 }
-
-case class TestObject(@JsonProperty("foo") foo: String, @JsonProperty("bar") bar: Int)
