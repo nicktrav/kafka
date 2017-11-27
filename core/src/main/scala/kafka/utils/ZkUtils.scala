@@ -28,7 +28,7 @@ import kafka.controller.{LeaderIsrAndControllerEpoch, ReassignedPartitionsContex
 import kafka.metrics.KafkaMetricsGroup
 import kafka.server.ConfigType
 import kafka.utils.ZkUtils._
-import kafka.zk.PartitionAssignment
+import kafka.zk.ReassignPartitionsZNode.PartitionAssignment
 
 import com.yammer.metrics.core.MetricName
 import org.I0Itec.zkclient.exception.{ZkBadVersionException, ZkException, ZkMarshallingError, ZkNoNodeException, ZkNodeExistsException}
@@ -176,7 +176,7 @@ object ZkUtils {
     DeleteTopicsPath + "/" + topic
 
   def parsePartitionReassignmentData(jsonData: String): Map[TopicAndPartition, Seq[Int]] = {
-    val parseResult = Json.parseAs[PartitionAssignment](jsonData)
+    val parseResult = Json.parseStringAs[PartitionAssignment](jsonData)
 
     val assignments = parseResult match {
       case Left(throwable) => throw new ConfigException(s"Invalid reassignment config: $throwable")
@@ -186,7 +186,7 @@ object ZkUtils {
     val seq = for {
       assignment <- assignments.partitions.asScala
     } yield {
-      (TopicAndPartition(assignment.topic, assignment.partitions), assignment.replicas.asScala)
+      (TopicAndPartition(assignment.topic, assignment.partition), assignment.replicas.asScala)
     }
 
     seq.toMap
